@@ -1,39 +1,46 @@
-🛡️ Maverick-Tor: Transparent Proxy for Arch Linux
+# 🛡️ Maverick-Tor: Transparent Proxy for Arch Linux
 
-"Desenvolvido com a filosofia Maverick: Faça você mesmo, entenda o que roda."
+_"Desenvolvido com a filosofia Maverick: Faça você mesmo, entenda o que roda."_
 
-O Maverick-Tor é um script de roteamento Tor robusto, auditável e à prova de vazamentos, desenhado especificamente para usuários de Arch Linux e Archcraft.
+O __Maverick-Tor__ é um script de roteamento Tor robusto, auditável e à prova de vazamentos, desenhado especificamente para usuários de Arch Linux e Archcraft.
 
 É uma alternativa minimalista e transparente ao Anonsurf e Nipe, focada em resolver as peculiaridades do Arch (como conflitos com systemd-resolved e links simbólicos de DNS) que frequentemente quebram outras ferramentas.
 
 
-🚀 Funcionalidades
+## 🚀 Funcionalidades
 
-👻 Ghost DNS Strategy (V7): Utiliza uma técnica de "IP Fantasma" para contornar conflitos de DNS local, garantindo que 100% das requisições de nome sejam resolvidas pelo Tor.
+### 👻 Ghost DNS Strategy (V7) 
+Utiliza uma técnica de "IP Fantasma" para contornar conflitos de DNS local, garantindo que 100% das requisições de nome sejam resolvidas pelo Tor.
 
-🔗 Symlink Safe: Detecta e preserva links simbólicos do /etc/resolv.conf, garantindo que o sistema volte exatamente ao estado original após o uso.
+### 🔗 Symlink Safe
+Detecta e preserva links simbólicos do /etc/resolv.conf, garantindo que o sistema volte exatamente ao estado original após o uso.
 
-🛑 IPv6 Kill Switch: Desabilita temporariamente a pilha IPv6 para prevenir vazamentos de identidade (já que o Tor suporta primariamente IPv4).
+### 🛑 IPv6 Kill Switch
+Desabilita temporariamente a pilha IPv6 para prevenir vazamentos de identidade (já que o Tor suporta primariamente IPv4).
 
-🌐 System-wide Routing: Redireciona todo o tráfego TCP do sistema através da rede Onion.
+### 🌐 System-wide Routing 
+Redireciona todo o tráfego TCP do sistema através da rede Onion.
 
-👁️ Auditável: Um único arquivo Bash. Sem binários ocultos, sem dependências de Python/Perl quebradas.
+### 👁️ Auditável
+Um único arquivo Bash. Sem binários ocultos, sem dependências de Python/Perl quebradas.
 
-🛠️ Guia de Instalação (Passo a Passo)Siga os passos abaixo rigorosamente para preparar seu sistema antes de rodar o script.
 
-Passo 1: Instalar Dependências
+## 🛠️ Guia de Instalação (Passo a Passo)
+Siga os passos abaixo rigorosamente para preparar seu sistema antes de rodar o script.
+
+### Passo 1: Instalar Dependências
 Você precisa do pacote tor (o serviço) e iptables (o firewall). No Arch Linux/Archcraft, execute:
-sudo pacman -S tor iptables
+_sudo pacman -S tor iptables_
 
 
-Passo 2: Configurar o Tor (Crucial)O Tor padrão não aceita conexões transparentes nativamente. Você precisa abrir as portas de roteamento e DNS.
+### Passo 2: Configurar o Tor (Crucial)O Tor padrão não aceita conexões transparentes nativamente. Você precisa abrir as portas de roteamento e DNS.
 
 Abra o arquivo de configuração do Tor:
-
-sudo nano /etc/tor/torrc
+_sudo nano /etc/tor/torrc_
 
 Vá até o final do arquivo e cole exatamente o bloco abaixo:
 
+```
 # Configuração para Proxy Transparente (Maverick Script)
 VirtualAddrNetworkIPv4 10.192.0.0/10
 AutomapHostsOnResolve 1
@@ -43,42 +50,43 @@ TransPort 0.0.0.0:9040
 
 # Porta para resolver DNS (Evita vazamentos)
 DNSPort 0.0.0.0:5353
+```
 
 Salve e saia (Ctrl+O, Enter, Ctrl+X).
 
 
-Passo 3: Instalar o ScriptAgora, baixe e instale o Maverick-Tor:
-# 1. Clone este repositório
+### Passo 3: Instalar o ScriptAgora, baixe e instale o Maverick-Tor:
+#### 1. Clone este repositório
 git clone https://github.com/mavericksf/maverick-tor.git
 cd maverick-tor
 
-# 2. Torne o script executável
-chmod +x maverick-tor
+#### 2. Torne o script executável
+_chmod +x maverick-tor_
 
-# 3. (Opcional) Mova para a pasta de binários para executar de qualquer lugar
-sudo cp maverick-tor /usr/local/bin/
+#### 3. (Opcional) Mova para a pasta de binários para executar de qualquer lugar
+_sudo cp maverick-tor /usr/local/bin/_
 
 
-💻 Uso
+## 💻 Uso
 O script deve ser executado como root (sudo) para manipular o firewall e o DNS.
 
-▶️ Iniciar (Modo Anônimo)
-sudo maverick-tor start
+### ▶️ Iniciar (Modo Anônimo)
+_sudo maverick-tor start_
 
 Isso irá configurar o IP Fantasma, travar o arquivo DNS, aplicar regras de IPTables e reiniciar o serviço Tor.
 
-▶️ Verificação de funcionamento:
-curl https://check.torproject.org/api/ip
+### ▶️ Verificação de funcionamento:
+_curl https://check.torproject.org/api/ip_
 
 Deve retornar {"IsTor":true, ...}.
 
-⏹️ Parar (Restaurar Internet Normal)
-sudo maverick-tor stop
+### ⏹️ Parar (Restaurar Internet Normal)
+_sudo maverick-tor stop_
 
 Limpa o firewall, destrava o DNS, restaura o link simbólico original do systemd e reativa o IPv6.
 
 
-🔍 Como Funciona (A Estratégia "Ghost DNS")
+## 🔍 Como Funciona (A Estratégia "Ghost DNS")
 Muitas ferramentas falham no Arch Linux porque o systemd-resolved luta pelo controle do arquivo /etc/resolv.conf. O Maverick-Tor resolve isso enganando o sistema: O script configura o DNS do sistema para um IP inexistente na rede (ex: 10.0.0.242).
 
 Quando um programa tenta resolver um domínio, o Linux envia um pacote para esse IP fantasma através da interface de rede.
@@ -90,9 +98,9 @@ O Tor resolve o nome anonimamente e devolve o IP.
 Isso evita conflitos de localhost e garante que o tráfego DNS seja sempre capturado pelo firewall.
 
 
-⚠️ Aviso Legal e Segurança
+## ⚠️ Aviso Legal e Segurança
 Segurança Operacional: Este script oculta seu IP, mas não protege contra Browser Fingerprinting ou scripts maliciosos se você usar um navegador inseguro. Recomenda-se o uso do Mullvad Browser ou LibreWolf enquanto o script estiver ativo.
 
 Google/Serviços: Espere bloqueios ou CAPTCHAs ao acessar serviços do Google, Cloudflare ou Bancos, pois IPs de saída do Tor são frequentemente listados em blocklists.
 
-Uso: Esta ferramenta é para fins educacionais e de privacidade pessoal.
+__Uso: Esta ferramenta é para fins educacionais e de privacidade pessoal.__
